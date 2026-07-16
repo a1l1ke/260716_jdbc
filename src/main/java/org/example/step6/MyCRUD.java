@@ -3,6 +3,8 @@ package org.example.step6;
 import org.example.entity.Banchan;
 import org.example.repository.BanchanRepository;
 
+import java.util.List;
+
 public class MyCRUD {
     public static void main(String[] args) {
         BanchanRepository repository = new BanchanRepository();
@@ -13,15 +15,17 @@ public class MyCRUD {
         System.out.println("repository.findAll() = " + repository.findAll());
 
         // 개별 읽기 -> 수정 -> 삭제
-        Banchan myBanchan = repository.findById(1);
+        List<Banchan> banchanList = repository.findAll();
+        System.out.println("banchanList = " + banchanList);
+        Banchan myBanchan = repository.findById(banchanList.get(0).id());
         System.out.println("myBanchan = " + myBanchan);
         Banchan myBanchan2 = new Banchan(
                 myBanchan.id(),
                 myBanchan.name() + "라는 이름..."
         );
         repository.update(myBanchan2);
-        System.out.println("repository.findAll() = " + repository.findAll());
-        repository.deleteById(1);
+        // 가장 오래된 데이터를 삭제
+        repository.deleteById(banchanList.get(0).id());
         System.out.println("repository.findAll() = " + repository.findAll());
     }
 }
