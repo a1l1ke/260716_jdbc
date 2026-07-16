@@ -14,6 +14,7 @@ public class MyCRUD {
 
         // 개별 읽기 -> 수정 -> 삭제
         Banchan myBanchan = repository.findById(1);
+        System.out.println("myBanchan = " + myBanchan);
         Banchan myBanchan2 = new Banchan(
                 myBanchan.id(),
                 myBanchan.name() + "라는 이름..."

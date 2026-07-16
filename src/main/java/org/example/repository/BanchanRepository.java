@@ -37,6 +37,20 @@ public class BanchanRepository {
     // find / findAll (read)
     public Banchan findById(long id) {
         System.out.println("BanchanRepository.findById");
+        String query = "SELECT id, name FROM banchan WHERE id = ?";
+        try (Connection conn = DBUtil.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setLong(1, id); // 1번째 자리에 id
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) { // 값이 1개니까 있냐/없냐가 중요
+                return new Banchan(
+                        rs.getLong("id"),
+                        rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.out.println("반찬 읽기 실패");
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -69,6 +83,26 @@ public class BanchanRepository {
         System.out.println("BanchanRepository.update");
         // 전체 새로운 데이터를 넣어서 처리
         // 원본을 복제해서 -> 수정할 것만 바꾸고 -> 새롭게 넣어서
+        String query = """
+                    UPDATE banchan
+                        SET name = ?
+                        WHERE id = ?
+                """;
+        try (Connection conn = DBUtil.getConnection()) {
+            Statement stmt = conn.createStatement();
+            stmt.execute("START TRANSACTION"); // 트랜잭션 시작
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, banchan.name());
+            pstmt.setLong(2, banchan.id()); // ID를 통해서 같은 데이터를 수정함을 체크
+            int result = pstmt.executeUpdate();
+            if (result == 0) {
+                throw new RuntimeException("반찬 수정 실패");
+            }
+            stmt.execute("COMMIT"); // 트랜잭션 커밋(저장)
+        } catch (SQLException e) {
+            System.out.println("반찬 수정 실패");
+            throw new RuntimeException(e);
+        }
     }
 
     public void deleteById(long id) {
