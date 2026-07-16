@@ -1,13 +1,39 @@
 package org.example.repository;
 
 import org.example.entity.Banchan;
+import org.example.util.DBUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class BanchanRepository {
     // save (create)
     public void save(Banchan banchan) {
         System.out.println("BanchanRepository.save");
+        String query = """
+                -- ID는 자동으로 생성되므로 name만 입력
+                INSERT INTO
+                    banchan (name)
+                VALUES
+                    (?)
+                """;
+        try (Connection conn = DBUtil.getConnection()) {
+            Statement stmt = conn.createStatement();
+            stmt.execute("START TRANSACTION"); // 트랜잭션 시작
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, banchan.name());
+            pstmt.executeUpdate(); // insert류는 executeUpdate()
+            // 1. execute -> transaction, ddl
+            // 2. executeQuery -> select/procedure -> ResultSet
+            // 3. executeUpdate -> insert/update/delete -> int
+            stmt.execute("COMMIT"); // 트랜잭션 커밋(저장)
+        } catch (SQLException e) {
+            System.out.println("반찬 추가 실패");
+            throw new RuntimeException(e);
+        }
     }
 
     // find / findAll (read)
