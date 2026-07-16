@@ -4,12 +4,17 @@ import org.example.entity.Banchan;
 import org.example.repository.BanchanRepository;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class MyCRUD {
     public static void main(String[] args) {
         BanchanRepository repository = new BanchanRepository();
         System.out.println("repository.findAll() = " + repository.findAll());
-        repository.save(new Banchan(0, "열무김치"));
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("메뉴이름을 입력해주세요!");
+        String name = scanner.nextLine();
+//        repository.save(new Banchan(0, "열무김치"));
+        repository.save(new Banchan(0, name));
         // 제약조건을 어김 (255글자까지인데 400글자 넣기 시도)
 //        repository.save(new Banchan(0, "열무김치".repeat(100)));
         System.out.println("repository.findAll() = " + repository.findAll());
