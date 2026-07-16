@@ -3,10 +3,8 @@ package org.example.repository;
 import org.example.entity.Banchan;
 import org.example.util.DBUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BanchanRepository {
@@ -44,7 +42,24 @@ public class BanchanRepository {
 
     public List<Banchan> findAll() {
         System.out.println("BanchanRepository.findAll");
-        return null;
+        List<Banchan> result = new ArrayList<>();
+//        String query = "SELECT * FROM banchan";
+        String query = "SELECT id, name FROM banchan";
+        try (Connection conn = DBUtil.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                result.add(
+                        new Banchan(
+                                rs.getLong("id"),
+                                rs.getString("name")));
+            }
+        } catch (SQLException e) {
+            System.out.println("반찬 읽기 실패");
+            throw new RuntimeException(e);
+        }
+//        return null;
+        return result;
     }
 
     // update - persistence
