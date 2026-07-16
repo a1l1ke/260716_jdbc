@@ -13,6 +13,12 @@ public class DBUtil {
     private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 //        System.out.println("URL = " + URL);
 //        System.out.println("USER = " + USER);
 //        System.out.println("PASSWORD = " + PASSWORD.substring(0, 5) + "...");
