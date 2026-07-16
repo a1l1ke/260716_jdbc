@@ -107,5 +107,23 @@ public class BanchanRepository {
 
     public void deleteById(long id) {
         System.out.println("BanchanRepository.deleteById");
+        String query = """
+                    DELETE FROM banchan
+                        WHERE id = ?
+                """;
+        try (Connection conn = DBUtil.getConnection()) {
+            Statement stmt = conn.createStatement();
+            stmt.execute("START TRANSACTION"); // 트랜잭션 시작
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setLong(1, id);
+            int result = pstmt.executeUpdate();
+            if (result == 0) {
+                throw new RuntimeException("반찬 삭제 실패");
+            }
+            stmt.execute("COMMIT"); // 트랜잭션 커밋(저장)
+        } catch (SQLException e) {
+            System.out.println("반찬 삭제 실패");
+            throw new RuntimeException(e);
+        }
     }
 }
